@@ -4,212 +4,145 @@
 # v1.0
 import requests
 import getpass
-import xml.etree.ElementTree as ET
+import re
+from bs4 import BeautifulSoup
+import lxml
 import urllib3
 import os
+import sys
 from shutil import copyfile
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-
 
 
 #Initializes cache files
 bigfix_new_asset_url_cache_file = '.bigfix_new_asset_url_list.cache'
 bigfix_old_asset_url_cache_file = '.bigfix_old_asset_url_list.cache'
 bigfix_diff_asset_url_cache_file = '.bigfix_temp_asset_url_list.cache'
+bigfix_inv_asset_url_cache_file = '.bigfix_inv_asset_url_list.cache'
+bigfix_asset_info_cache_file = '.bigfix_asset_info.cache'
 
 
-############ ENGINE ######
+#url
+my_url = 'my_url'
 
-def write_assets_to_cache(asset_url, cache_file):
-     f = open(cache_file, 'a')
-     f.write(asset_url+'\n')
-     f.close()
-
-def get_asset_url(username, password):
-#Function expects the username and password
-#bigfix URL:
-url='URL'
-#calls Bigfix to get the URL list of machines
-     os.remove(bigfix_new_asset_url_cache_file)
-     response = requests.get(url, verify=False, auth=(username, password))
-     root = ET.fromstring(response.text)
-#pull the Asset URL from the bigix XML parse
-     for xml_info in root.findall('Computer'):
-           asset_url = xml_info.get('Resource')
-           #print(asset_url)
-           cache_file = bigfix_new_asset_url_cache_file
-           write_assets_to_cache(asset_url, cache_file)
-
-
-
-def comp_assets(search_for, comp_against, delta_output):
-     try:
-          f = open(delta_output)
-          f.close()
-          os.remove(delta_output)
-     except IOError as e:
-          null=''
-     #     break
-     newf = open(search_for, 'r')
-     for line_in_newf in newf:
-          search_url_exists = line_in_newf.rstrip()
-          if search_url_exists not in open(comp_against).read():
-               output = open(delta_output, 'a')
-               output.write(search_url_exists)
-               output.close()
-
-     newf.close()
-
-def report_engine(report_on):
-     bigfix_report = 'report_output.csv'     
-     try:
-          f = open(bigfix_report)
-          f.close()
-          os.remove(bigfix_report)
-     except IOError as e:
-          null=''
-
-     report_output = open(bigfix_report, 'a')
-     header = 'Computer Name;Operating System;IP Address;Asset Type;Last Report Time\n'
-     #print(header)
-     report_output.write(header)
-     report_output.close()
-     newf = open(report_on, 'r')
-     for line_in_newf in newf:
-          asset_url = line_in_newf.rstrip()
-         # print(asset_url)
-          get_asset_info = requests.get(asset_url, verify=False, auth=(username, password))
-          #Parse XML for meaningfull information
-          bigfix_asset_info = ET.fromstring(get_asset_info.text)
-          for asset_xml_output in bigfix_asset_info.findall('Computer'):
-               for child in asset_xml_output:
-                    # Pull out Asset information
-                    name = child.get('Name')
-                    if name == 'Computer Name':
-                         computer_name = child.text
-                    elif name == 'OS':
-                         operating_system = child.text
-                    elif name == 'IP Address':
-                         ip_addr = child.text
-                    elif name == 'License Type':
-                         asset_type = child.text
-                    elif name == 'Last Report Time':
-                         report_time = child.text
-          data = computer_name+';'+operating_system+';'+ip_addr+';'+asset_type+';'+report_time+'\n' 
-         # print(data)
-          report_output = open(bigfix_report, 'a')
-          report_output.write(data)
-          report_output.close()
-
-
-
-
-###### ENGINE#################
-
-######### API Function Calls #####
 def init_cache(update_hist):
-#Intiallize Cache files.  This should only be rin once perday and should be part of Chon
-     #checks to see if new cache file exists, if not it creates it this is to avoid error if it is the first time running
-     try:
-         f = open(bigfix_new_asset_url_cache_file)
-         f.close()
-     except IOError as e:
-         f = open(bigfix_new_asset_url_cache_file, 'w')
-         f.close()
-     if update_hist == 'true':
-         #copies new cache to old
-         copyfile(bigfix_new_asset_url_cache_file, bigfix_old_asset_url_cache_file)
-     #deletes new cache file
-     os.remove(bigfix_new_asset_url_cache_file)
-
+    #Intiallize Cache files.  This should only be run once perday
+    try:
+        f = open(bigfix_new_asset_url_cache_file)
+        f.close()
+            except IOError as e:
+                f = open(bigfix_new_asset_url_cache_file, 'w')
+                f.close()
+                    if update_hist == 'true':
+                        #copies new cache to old
+                        copyfile(bigfix_new_asset_url_cache_file, bigfix_old_asset_url_cache_file)
+                            f = open(bigfix_new_asset_url_cache_file, 'w')
+                            f.close()
 
 def get_asset_url(username, password):
-#Function expects the username and password
-#calls Bigfix to get the URL list of machines
-     update_hist = 'false'
-     init_cache(update_hist)
-     response = requests.get('***REMOVED***', verify=False, auth=(username, password))
-     root = ET.fromstring(response.text)
-#pull the Asset URL from the bigix XML parse
-     for xml_info in root.findall('Computer'):
-           asset_url = xml_info.get('Resource')
-           #print(asset_url)
-           cache_file = bigfix_new_asset_url_cache_file
-           write_assets_to_cache(asset_url, cache_file)
+    #Function expects the username and password
+    #calls Bigfix to get the URL list of machines
+    f = open(bigfix_new_asset_url_cache_file, 'w')
+    f.close()
+    response = requests.get(my_url, verify=False, auth=(username, password))
+    #print(response.text)
+    f = open(bigfix_new_asset_url_cache_file, 'a')
+        f.write(response.text)
+        f.close()
+
+def read_bigfix_url_file():
+    #Reads file containaing BigFix URL's and parses out the URL for that asset outputs to inventory file
+    #infile = 'big_fix_url.txt'
+    infile = bigfix_new_asset_url_cache_file
+        outfile = open(bigfix_inv_asset_url_cache_file, 'w')
+        outfile.close()
+        fileobj = open(infile, 'r')
+        out= fileobj.readlines()
+        for line in out:
+            soup = BeautifulSoup(line, 'lxml')
+            #print(soup.computer)
+            if soup.computer != None:
+                #    print(soup.computer)
+                print(soup.computer.get('resource'))
+                outfile = open(bigfix_inv_asset_url_cache_file, 'a')
+                outfile.write(soup.computer.get('resource')+'\n')
+                outfile.close()
+                    # asset_url = soup.computer.get('resource')
+                    fileobj.close()
 
 
-def find_new_assets():
-     search_for =  '.bigfix_new_asset_url_list.cache' 
-     comp_against = '.bigfix_old_asset_url_list.cache' 
-     delta_output = '.bigfix_temp_asset_url_list.cache'
-     comp_assets(search_for, comp_against, delta_output)
+def read_asset_info_file(report_on):
+    #reads inforamtion from file and extracts meaingful information
+    bigfix_report = 'report_output.dem'
+        f = open(bigfix_report, 'w')
+        report_output = open(bigfix_report, 'a')
+        header = 'Computer Name;Operating System;IP Address;Asset Type;Last Report Time\n'
+            report_output.write(header)
+            report_output.close()
+            
+            newf = open(report_on, 'r')
+            for line_in_newf in newf:
+                asset_url = line_in_newf.rstrip()
+                #  print(asset_url)
+                get_asset_info = requests.get(asset_url, verify=False, auth=(username, password))
+                #   print(get_asset_info.text)
+                asset_info = open(bigfix_asset_info_cache_file, 'w')
+                asset_info.write(get_asset_info.text)
+                asset_info.close()
+                infile = bigfix_asset_info_cache_file
+                    #infile = 'asset_info.txt'
+                    fileobj = open(infile, 'r')
+                    out= fileobj.readlines()
+                    for line in out:
+                        match =re.match("(.*<Property Name=\"Computer Name\".*>)", str(line))
+                        if match != None:
+                            #  print(match.group(0))
+                            soup = BeautifulSoup(line, 'lxml')
+                            #   print(soup.text)
+                                computer_name = soup.text
+                                    match =re.match("(.*<Property Name=\"OS\".*>)", str(line))
+                                    if match != None:
+                                        #    print(match.group(0))
+                                        soup = BeautifulSoup(line, 'lxml')
+                                        #    print(soup.text)
+                                            operating_system  = soup.text
+                                                match =re.match("(.*<Property Name=\"IP Address\".*>)", str(line))
+                                                if match != None:
+                                                    #    print(match.group(0))
+                                                    soup = BeautifulSoup(line, 'lxml')
+                                                    #   print(soup.text)
+                                                        ip_addr  = soup.text
+                                                            match =re.match("(.*<Property Name=\"License Type\".*>)", str(line))
+                                                            if match != None:
+                                                                #   print(match.group(0))
+                                                                soup = BeautifulSoup(line, 'lxml')
+                                                                #   print(soup.text)
+                                                                    asset_type  = soup.text
+                                                                        match =re.match("(.*<Property Name=\"Last Report Time\".*>)", str(line))
+                                                                        if match != None:
+                                                                            #  print(match.group(0))
+                                                                            soup = BeautifulSoup(line, 'lxml')
+                                                                            #  print(soup.text)
+                                                                                report_time  = soup.text
+                                                                                    fileobj.close()
+                                                                                    data =      computer_name.rstrip()+';'+operating_system.rstrip()+';'+ip_addr.rstrip()+';'+asset_type.rstrip()+';'+report_time.rstrip()+'\n'
+                                                                                    print(data)
+                                                                                    report_output = open(bigfix_report, 'a')
+                                                                                    report_output.write(data)
+                                                                                    report_output.close()
 
 
-def find_decom_assets():
-     search_for =  '.bigfix_old_asset_url_list.cache'
-     comp_against = '.bigfix_new_asset_url_list.cache'
-     delta_output = '.bigfix_temp_asset_url_list.cache'
-     comp_assets(search_for, comp_against, delta_output)
-
-
-def gen_asset_report(rep_type):
-    if rep_type == 'current':
-       update_hist='false'
-       init_cache(update_hist)
-       get_asset_url(username, password)
-       report_on =  '.bigfix_new_asset_url_list.cache'
-       report_engine(report_on)
-      # print("hello")
-    elif rep_type == 'new':
-       update_hist='false'
-       init_cache(update_hist)
-       get_asset_url(username, password)
-       find_new_assets()
-       report_on =  '.bigfix_temp_asset_url_list.cache'
-       report_engine(report_on)
-      # print("hello")
-    elif rep_type == 'new_w_cache':
-       update_hist='true'
-       init_cache(update_hist)
-       get_asset_url(username, password)
-       find_new_assets()
-       report_on =  '.bigfix_temp_asset_url_list.cache'
-       report_engine(report_on)
-      # print("hello")
-    elif rep_type == 'decom':
-       update_hist='false'
-       init_cache(update_hist)
-       get_asset_url(username, password)
-       find_decom_assets()
-       report_on =  '.bigfix_temp_asset_url_list.cache'
-       report_engine(report_on)
-      # print("hello")
-    elif rep_type == 'decom_w_cache':
-       update_hist='true'
-       init_cache(update_hist)
-       get_asset_url(username, password)
-       find_new_assets()
-       report_on =  '.bigfix_temp_asset_url_list.cache'
-       report_engine(report_on)
-       # print("hello")
-    elif rep_type == 'history':
-       report_on =  '.bigfix_old_asset_url_list.cache'
-       report_engine(report_on)
-
-
-#############API########
 
 
 #########Order of Operations#####
 
-username = input("Please Enter Username: ")
+username = input("Please Ent`er Username: ")
 password = getpass.getpass()
 
-update_hist='true'
+
+update_hist = 'true'
 init_cache(update_hist)
 get_asset_url(username, password)
-find_new_assets`()
-find_decom_assets()
-rep_type = 'current'
-gen_asset_report(rep_type)
+read_bigfix_url_file()
+report_on = bigfix_inv_asset_url_cache_file
+read_asset_info_file(report_on)
