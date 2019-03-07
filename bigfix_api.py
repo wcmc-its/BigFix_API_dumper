@@ -15,7 +15,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 #bigfix_url
-bigfix_url = '***REMOVED***'
+bigfix_url = 'URL_HERE'
 
 
 #Initializes cache files
