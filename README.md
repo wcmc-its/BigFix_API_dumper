@@ -1,4 +1,4 @@
-# BigFix API
+# BigFix API v. 2.5
 BigFix has an API that is pretty useful. However, to get meaningful data I programed this interpreter.  This is very much still in development, with new features to follow.
 
 ## requirements
@@ -23,5 +23,15 @@ chmod 755
 ./bigfix_api.py
 
 
-## Retool
-I retooled this API using BeautifulSoup and RE as etree was breaking down when I ran it.   Right now, there are no controls other than re-initializing the cache.   There are many redundancies in this code, and I am using files, more than running in memory due to the issues I encountered in etree.  I do plan on adding back some controls so this can be executed with a single function call.  I also tried and failed to reduce my match calls to a single function.  This code has been tested and it works.  So, I will probably leave this all as is unless my OCD starts up.
+## 2.5 Update
+Everything is ran from gen_asset_report(rep_type)
+
+### allows:
+- new = updates everything and gives you entire inventory
+- last = nothing is updated runs off last inventory cache file
+- current = pulls new inventory list from bigfix and reports on it.  History file is not updated
+- new_servers = pulls new inventory list from bigfix and compares against history file 
+- new_servers_hist_upd = pulls new inventory list from bigfix and compares against an updated history file 
+- decom_servers = pulls Decom from bigfix history file and compares against new inventory file 
+- decom_servers_hist_upd = pulls Decom from updated bigfix history file and compares against new inventory file 
+- history= pulls new inventory list from bigfix and compares against an updated history file currently if you run with out a history file this will crash
