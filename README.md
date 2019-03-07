@@ -24,7 +24,7 @@ chmod 755
 
 
 ## 2.5 Update
-Everything is ran from gen_asset_report(rep_type)
+Everything is run from gen_asset_report(rep_type)
 
 ### allows:
 - new = updates everything and gives you entire inventory
