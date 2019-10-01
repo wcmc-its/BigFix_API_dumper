@@ -64,12 +64,9 @@ def update_history(update_hist):
 
 def read_bigfix_url_file(update_hist):
 #Reads file containaing BigFix URL's and parses out the URL for that asset outputs to inventory file
-     infile = bigfix_new_asset_url_cache_file
      outfile = open(bigfix_inv_asset_url_cache_file, 'w')
      outfile.close()
-     fileobj = open(infile, 'r')
-     out= fileobj.readlines()
-     for line in out:
+     for line in open(bigfix_new_asset_url_cache_file, 'r'):
           soup = BeautifulSoup(line, 'lxml')
           #print(soup.computer)
           if soup.computer != None:
