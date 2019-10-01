@@ -122,20 +122,26 @@ def find_decom_assets():
 
 
 def read_asset_info_file(report_on):
-    # reads inforamtion from file and extracts meaingful information
-    bigfix_report = 'report_output.dem'
+    # reads inforamtion from a file containing a list of BF asset URLs and extracts meaingful information,
+    # then writes them to a delimeted report file
+    bigfix_report = 'report_output.dem' # report output file
     report_output = open(bigfix_report, 'w')
+    # header for report
     header = 'Computer Name;Operating System;IP Address;Asset Type;Last Report Time;Big_Fix_Asset URL\n'
     report_output.write(header)
 
-    newf = open(report_on, 'r')
-    for line_in_newf in newf:
-        asset_url = line_in_newf.rstrip()
+    url_list = open(report_on, 'r')
+
+    for raw_url in url_list:
+        # remove trailing newline
+        asset_url = raw_url.rstrip()
         # print(asset_url)
-        raw_asset_info = requests.get(
+        # request asset from BigFix
+        asset_info_request = requests.get(
             asset_url, verify=False, auth=(username, password))
             # print(get_asset_info.text)
-        asset_soup = BeautifulSoup(raw_asset_info.text, 'lxml')
+        # make soup
+        asset_soup = BeautifulSoup(asset_info_request.text, 'lxml')
 
         # extract relevant information
         computer_name = asset_soup.find_all('property', {'name': 'Computer Name'})[0].text
@@ -144,9 +150,11 @@ def read_asset_info_file(report_on):
         asset_type = asset_soup.find_all('property', {'name': 'License Type'})[0].text
         report_time = asset_soup.find_all('property', {'name': 'Last Report Time'})[0].text
 
+        # compile a line to write, and write it to our report
         data = computer_name.rstrip() + ';' + operating_system.rstrip() + ';' + ip_addr.rstrip() + \
             ';' + asset_type.rstrip() + ';' + report_time.rstrip() + ';' + asset_url + '\n'
-        print(data)
+        if __debug__:
+            print(data)
         report_output.write(data)
     report_output.close()
 
