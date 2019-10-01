@@ -12,10 +12,13 @@ import urllib3
 import os
 import sys
 from shutil import copyfile
+import configparser
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#bigfix_url
-bigfix_url = 'URL_HERE'
+#get bigfix URL from config file
+config = configparser.ConfigParser()
+config.read('bigfix_config.conf')
+bigfix_url = config["DEFAULT"]["bigfix_api_url"]
 
 
 #Initializes cache files
