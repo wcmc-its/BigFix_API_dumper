@@ -124,8 +124,7 @@ def find_decom_assets():
 def read_asset_info_file(report_on):
     # reads inforamtion from file and extracts meaingful information
     bigfix_report = 'report_output.dem'
-    f = open(bigfix_report, 'w')
-    report_output = open(bigfix_report, 'a')
+    report_output = open(bigfix_report, 'w')
     header = 'Computer Name;Operating System;IP Address;Asset Type;Last Report Time;Big_Fix_Asset URL\n'
     report_output.write(header)
     report_output.close()
