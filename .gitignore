@@ -1,0 +1,4 @@
+.bigfix*
+report_output.dem
+*.pyc
+*.pyo
