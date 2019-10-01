@@ -315,4 +315,5 @@ if __name__ == "__main__":
     if not password:
         password = getpass.getpass()
 
+    # finally do the things
     gen_asset_report(args.rep_type)
