@@ -1,4 +1,5 @@
-#!/opt/rh/rh-python36/root/usr/bin/python
+#!/usr/bin/env python3
+
 # This script pulls from Bigfix API, and outputs All systems into csv format.
 # Written by: Brian Whelan
 # v2.5
@@ -12,7 +13,6 @@ import os
 import sys
 from shutil import copyfile
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 
 #bigfix_url
 bigfix_url = 'URL_HERE'
@@ -28,16 +28,18 @@ bigfix_asset_info_cache_file = '.bigfix_asset_info.cache'
 
 def init_cache():
 #Intiallize Cache files.  This should only be run once perday
+     if __debug__: print("Initializing cache")
      try:
          f = open(bigfix_new_asset_url_cache_file)
          f.close()
      except IOError as e:
          f = open(bigfix_new_asset_url_cache_file, 'w')
          f.close()
-     
+
 def get_asset_url(username, password):
 #Function expects the username and password
 #calls Bigfix to get the URL list of machines
+     if __debug__: print("getting asset URLs")
      f = open(bigfix_new_asset_url_cache_file, 'w')
      f.close()
      response = requests.get(bigfix_url, verify=False, auth=(username, password))
@@ -48,7 +50,7 @@ def get_asset_url(username, password):
 
 
 def update_history(update_hist):
-#creats inventory file if it does not exist, also copies it to History.  History is used for comparison New and Decom 
+#creats inventory file if it does not exist, also copies it to History.  History is used for comparison New and Decom
      try:
          f = open(bigfix_inv_asset_url_cache_file)
          f.close()
@@ -62,7 +64,6 @@ def update_history(update_hist):
 
 def read_bigfix_url_file(update_hist):
 #Reads file containaing BigFix URL's and parses out the URL for that asset outputs to inventory file
-     #infile = 'big_fix_url.txt'
      infile = bigfix_new_asset_url_cache_file
      outfile = open(bigfix_inv_asset_url_cache_file, 'w')
      outfile.close()
@@ -102,7 +103,7 @@ def comp_assets(search_for, comp_against, delta_output):
 
 
 def find_new_assets():
-#compair two files and output 
+#compair two files and output
      search_for =  '.bigfix_inv_asset_url_list.cache'
      comp_against = '.bigfix_old_asset_url_list.cache'
      delta_output = '.bigfix_temp_asset_url_list.cache'
@@ -110,7 +111,7 @@ def find_new_assets():
 
 
 def find_decom_assets():
-#compair two files and output 
+#compair two files and output
      search_for =  '.bigfix_old_asset_url_list.cache'
      comp_against = '.bigfix_inv_asset_url_list.cache'
      delta_output = '.bigfix_temp_asset_url_list.cache'
@@ -136,7 +137,7 @@ def read_asset_info_file(report_on):
           asset_info = open(bigfix_asset_info_cache_file, 'w')
           asset_info.write(get_asset_info.text)
           asset_info.close()
-          infile = bigfix_asset_info_cache_file 
+          infile = bigfix_asset_info_cache_file
           #infile = 'asset_info.txt'
           fileobj = open(infile, 'r')
           out= fileobj.readlines()
@@ -203,7 +204,7 @@ def gen_asset_report(rep_type):
        report_on = '.bigfix_inv_asset_url_list.cache'
        read_asset_info_file(report_on)
     elif rep_type == 'new_servers':
-       #pulls new inventory list from bigfix and compares against history file 
+       #pulls new inventory list from bigfix and compares against history file
        update_hist='false'
        init_cache()
        get_asset_url(username, password)
@@ -212,7 +213,7 @@ def gen_asset_report(rep_type):
        report_on = '.bigfix_temp_asset_url_list.cache'
        read_asset_info_file(report_on)
     elif rep_type == 'new_servers_hist_upd':
-       #pulls new inventory list from bigfix and compares  against an updated history file 
+       #pulls new inventory list from bigfix and compares  against an updated history file
        update_hist='true'
        init_cache()
        get_asset_url(username, password)
@@ -221,7 +222,7 @@ def gen_asset_report(rep_type):
        report_on = '.bigfix_temp_asset_url_list.cache'
        read_asset_info_file(report_on)
     elif rep_type == 'decom_servers':
-       #pulls Decom from bigfix history file and compares against new inventory file 
+       #pulls Decom from bigfix history file and compares against new inventory file
        update_hist='false'
        init_cache()
        get_asset_url(username, password)
@@ -230,7 +231,7 @@ def gen_asset_report(rep_type):
        report_on = '.bigfix_temp_asset_url_list.cache'
        read_asset_info_file(report_on)
     elif rep_type == 'decom_servers_hist_upd':
-       #pulls Decom from updated bigfix history file and compares against new inventory file 
+       #pulls Decom from updated bigfix history file and compares against new inventory file
        update_hist='true'
        init_cache()
        get_asset_url(username, password)
@@ -239,7 +240,7 @@ def gen_asset_report(rep_type):
        report_on = '.bigfix_temp_asset_url_list.cache'
        read_asset_info_file(report_on)
     elif rep_type == 'history':
-       #pulls new inventory list from bigfix and compares against an updated history file 
+       #pulls new inventory list from bigfix and compares against an updated history file
        #currently if you run with out a history file this will crash
        report_on = '.bigfix_old_asset_url_list.cache'
        read_asset_info_file(report_on)
@@ -262,5 +263,5 @@ password = getpass.getpass()
 #report_on = bigfix_inv_asset_url_cache_file
 #read_asset_info_file(report_on)
 
-rep_type = 'new'  
+rep_type = 'new'
 gen_asset_report(rep_type)
