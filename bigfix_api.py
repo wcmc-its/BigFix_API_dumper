@@ -132,10 +132,10 @@ def read_asset_info_file(report_on):
     newf = open(report_on, 'r')
     for line_in_newf in newf:
         asset_url = line_in_newf.rstrip()
-      #  print(asset_url)
+        # print(asset_url)
         get_asset_info = requests.get(
             asset_url, verify=False, auth=(username, password))
-     #   print(get_asset_info.text)
+            # print(get_asset_info.text)
         asset_info = open(bigfix_asset_info_cache_file, 'w')
         asset_info.write(get_asset_info.text)
         asset_info.close()
@@ -146,33 +146,33 @@ def read_asset_info_file(report_on):
         for line in out:
             match = re.match("(.*<Property Name=\"Computer Name\".*>)", str(line))
             if match != None:
-               #  print(match.group(0))
+                #  print(match.group(0))
                 soup = BeautifulSoup(line, 'lxml')
-             #   print(soup.text)
+                #   print(soup.text)
                 computer_name = soup.text
             match = re.match("(.*<Property Name=\"OS\".*>)", str(line))
             if match != None:
-             #    print(match.group(0))
+                #    print(match.group(0))
                 soup = BeautifulSoup(line, 'lxml')
-             #    print(soup.text)
+                #    print(soup.text)
                 operating_system = soup.text
             match = re.match("(.*<Property Name=\"IP Address\".*>)", str(line))
             if match != None:
-             #    print(match.group(0))
+                #    print(match.group(0))
                 soup = BeautifulSoup(line, 'lxml')
-             #   print(soup.text)
+                #   print(soup.text)
                 ip_addr = soup.text
             match = re.match("(.*<Property Name=\"License Type\".*>)", str(line))
             if match != None:
-             #   print(match.group(0))
+                #   print(match.group(0))
                 soup = BeautifulSoup(line, 'lxml')
-             #   print(soup.text)
+                #   print(soup.text)
                 asset_type = soup.text
             match = re.match("(.*<Property Name=\"Last Report Time\".*>)", str(line))
             if match != None:
-               #  print(match.group(0))
+                #  print(match.group(0))
                 soup = BeautifulSoup(line, 'lxml')
-               #  print(soup.text)
+                #  print(soup.text)
                 report_time = soup.text
         fileobj.close()
         data = computer_name.rstrip() + ';' + operating_system.rstrip() + ';' + ip_addr.rstrip() + \
