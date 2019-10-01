@@ -12,7 +12,6 @@ import urllib3
 import os
 import sys
 from shutil import copyfile
-import configparser
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -223,10 +222,8 @@ def gen_asset_report(rep_type):
 
 #########Order of Operations#####
 if __name__ == "__main__":
-    # user input
-    username = input("Please Enter Username: ")
-    password = getpass.getpass()
-
+    import argparse
+    import configparser
     # init_cache()
     #get_asset_url(username, password)
     #update_hist = 'true'
@@ -237,10 +234,82 @@ if __name__ == "__main__":
     #report_on = bigfix_inv_asset_url_cache_file
     # read_asset_info_file(report_on)
 
-    # get bigfix URL from config file
-    config = configparser.ConfigParser()
-    config.read('bigfix_config.conf')
-    bigfix_url = config["DEFAULT"]["bigfix_api_url"]
+    # default values before getting user input
+    username = None
+    password = None
+    bigfix_url = None
+
+    # get some info from the user about what we should be doing
+    parser = argparse.ArgumentParser(
+        description = "Get a bunch of stuff from BigFix",
+        epilog = """
+        By default, this script will attempt to input default
+        values from a config file named "bigfix_config.conf."
+        If this file is missing and none is specified via the
+        argument, the script will ask for input on the CLI.
+        If a config file is present and other arguments are
+        specified, the values specified in the arguments will
+        be used.
+        """
+    )
+    parser.add_argument('-c', '--config', help="config file.")
+    parser.add_argument('-u', '--user', help="API username")
+    parser.add_argument('-p', '--password', help="API password. If not specified here or in \
+                        the config file, it will be requested on the CLI")
+    parser.add_argument('-s', help="Force asking for password securely on CLI", action="store_true")
+    args = parser.parse_args()
+
+    # try to read in values from an assumed config file
+    try:
+        config = configparser.ConfigParser()
+        config.read('bigfix_config.conf')
+        try:
+            bigfix_url = config["DEFAULT"]["bigfix_api_url"]
+        except:
+            pass
+        try:
+            username = config["DEFAULT"]["username"]
+        except:
+            pass
+        try:
+            password = config["DEFAULT"]["password"]
+        except:
+            pass
+    except:
+        config = None
+
+    # read a config file specified by the user
+    if args.config:
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        try:
+            bigfix_url = config["DEFAULT"]["bigfix_api_url"]
+            print('got url')
+        except:
+            pass
+        try:
+            username = config["DEFAULT"]["username"]
+        except:
+            pass
+        try:
+            password = config["DEFAULT"]["password"]
+        except:
+            pass
+
+    # did we get a username from the user?
+    if args.user:
+        username = args.user
+    # same for password, with secure input handling
+    if args.s:
+        password = getpass.getpass()
+    elif args.password:
+        password = args.password
+
+    # fall back to requesting input directly from the user
+    if not username:
+        username = input("Please Enter Username: ")
+    if not password:
+        password = getpass.getpass()
 
     rep_type = 'new'
     gen_asset_report(rep_type)
