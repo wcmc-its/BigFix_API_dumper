@@ -15,10 +15,7 @@ from shutil import copyfile
 import configparser
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# get bigfix URL from config file
-config = configparser.ConfigParser()
-config.read('bigfix_config.conf')
-bigfix_url = config["DEFAULT"]["bigfix_api_url"]
+
 
 
 # Initializes cache files
@@ -225,18 +222,25 @@ def gen_asset_report(rep_type):
 
 
 #########Order of Operations#####
-username = input("Please Enter Username: ")
-password = getpass.getpass()
+if __name__ == "__main__":
+    # user input
+    username = input("Please Enter Username: ")
+    password = getpass.getpass()
 
-# init_cache()
-#get_asset_url(username, password)
-#update_hist = 'true'
-# update_history(update_hist)
-# find_new_assets()
-# find_decom_assets()
-# read_bigfix_url_file(update_hist)
-#report_on = bigfix_inv_asset_url_cache_file
-# read_asset_info_file(report_on)
+    # init_cache()
+    #get_asset_url(username, password)
+    #update_hist = 'true'
+    # update_history(update_hist)
+    # find_new_assets()
+    # find_decom_assets()
+    # read_bigfix_url_file(update_hist)
+    #report_on = bigfix_inv_asset_url_cache_file
+    # read_asset_info_file(report_on)
 
-rep_type = 'new'
-gen_asset_report(rep_type)
+    # get bigfix URL from config file
+    config = configparser.ConfigParser()
+    config.read('bigfix_config.conf')
+    bigfix_url = config["DEFAULT"]["bigfix_api_url"]
+
+    rep_type = 'new'
+    gen_asset_report(rep_type)
