@@ -66,16 +66,15 @@ def update_history(update_hist):
 
 
 def read_bigfix_url_file(update_hist):
-#Reads file containaing BigFix URL's and parses out the URL for that asset outputs to inventory file
-     outfile = open(bigfix_inv_asset_url_cache_file, 'w')
-     for line in open(bigfix_new_asset_url_cache_file, 'r'):
-          soup = BeautifulSoup(line, 'lxml')
-          #print(soup.computer)
-          if soup.computer != None:
-           #    print(soup.computer)
-               print(soup.computer.get('resource'))
-               outfile.write(soup.computer.get('resource')+'\n')
-              # asset_url = soup.computer.get('resource')
+     #Reads file containaing BigFix URL's and parses out the URL for that asset outputs to inventory file
+     outfile = open(bigfix_inv_asset_url_cache_file, 'w') # raw asset url output file
+     cache_file = open(bigfix_new_asset_url_cache_file, 'r') # raw BF output
+     cache_soup = BeautifulSoup(cache_file, 'lxml') # soupify raw BF output
+     computer_records = cache_soup.find_all('computer') # extract the computer computer records
+     if __debug__: print(f"extracted {len(computer_records)} computer records")
+     # get the resource URL from each computer record and write to URL file
+     for computer in computer_records:
+         outfile.write(computer['resource'] + '\n')
      outfile.close()
 
 
