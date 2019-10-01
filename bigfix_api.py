@@ -127,7 +127,6 @@ def read_asset_info_file(report_on):
     report_output = open(bigfix_report, 'w')
     header = 'Computer Name;Operating System;IP Address;Asset Type;Last Report Time;Big_Fix_Asset URL\n'
     report_output.write(header)
-    report_output.close()
 
     newf = open(report_on, 'r')
     for line_in_newf in newf:
@@ -148,9 +147,8 @@ def read_asset_info_file(report_on):
         data = computer_name.rstrip() + ';' + operating_system.rstrip() + ';' + ip_addr.rstrip() + \
             ';' + asset_type.rstrip() + ';' + report_time.rstrip() + ';' + asset_url + '\n'
         print(data)
-        report_output = open(bigfix_report, 'a')
         report_output.write(data)
-        report_output.close()
+    report_output.close()
 
 
 def gen_asset_report(rep_type):
