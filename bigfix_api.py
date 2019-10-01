@@ -257,6 +257,11 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--password', help="API password. If not specified here or in \
                         the config file, it will be requested on the CLI")
     parser.add_argument('-s', help="Force asking for password securely on CLI", action="store_true")
+    parser.add_argument('-r', '--rep_type',
+                        help="Report Type",
+                        default='new',
+                        choices=['new', 'last', 'current', 'new_servers', 'new_server_hist_upd',
+                        'decom_servers', 'decom_server_hist_upd', 'history'])
     args = parser.parse_args()
 
     # try to read in values from an assumed config file
@@ -284,7 +289,6 @@ if __name__ == "__main__":
         config.read(args.config)
         try:
             bigfix_url = config["DEFAULT"]["bigfix_api_url"]
-            print('got url')
         except:
             pass
         try:
@@ -311,5 +315,4 @@ if __name__ == "__main__":
     if not password:
         password = getpass.getpass()
 
-    rep_type = 'new'
-    gen_asset_report(rep_type)
+    gen_asset_report(args.rep_type)
