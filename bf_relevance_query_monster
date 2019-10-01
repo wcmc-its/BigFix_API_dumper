@@ -1,0 +1,21 @@
+(
+name of item 0 of it|"missing Name"
+, (concatenation ";" of values of results (item 0 of it, elements of item 1 of it))
+, (if (size of item 2 of it = 1) then ((if it = "" then "Property 2: No values" else it) of concatenation ";" of values of results (item 0 of it, elements of item 2 of it)) else (if (size of item 2 of it > 1) then (("Property 2 duplicates: " & concatenation "|" of ((name of it) & "=" & (id of it as string)) of elements of item 2 of it) as string) else ("Property 2 does not exist")))
+, (if (size of item 3 of it = 1) then ((if it = "" then "Property 3: No values" else it) of concatenation ";" of values of results (item 0 of it, elements of item 3 of it)) else (if (size of item 3 of it > 1) then (("Property 3 duplicates: " & concatenation "|" of ((name of it) & "=" & (id of it as string)) of elements of item 3 of it) as string) else ("Property 3 does not exist")))
+, (if (size of item 4 of it = 1) then ((if it = "" then "Property 4: No values" else it) of concatenation ";" of values of results (item 0 of it, elements of item 4 of it)) else (if (size of item 4 of it > 1) then (("Property 4 duplicates: " & concatenation "|" of ((name of it) & "=" & (id of it as string)) of elements of item 4 of it) as string) else ("Property 4 does not exist")))
+, (if (size of item 5 of it = 1) then ((if it = "" then "Property 5: No values" else it) of concatenation ";" of values of results (item 0 of it, elements of item 5 of it)) else (if (size of item 5 of it > 1) then (("Property 5 duplicates: " & concatenation "|" of ((name of it) & "=" & (id of it as string)) of elements of item 5 of it) as string) else ("Property 5 does not exist")))
+) of (
+elements of item 0 of it /*expand the computer set - gets you one line per computer*/
+,item 1 of it
+,item 2 of it
+,item 3 of it
+,item 4 of it
+,item 5 of it
+) of (
+set of BES computers
+, set of  bes properties whose (name of it as lowercase = ("BES Client Version") as lowercase) /* BES client versions */
+, set of  bes properties whose (name of it as lowercase = ("IP Address") as lowercase) /* IP Addresses */
+, set of  bes properties whose (name of it as lowercase = ("License Type") as lowercase) /* License Type */
+, set of  bes properties whose (name of it as lowercase = ("OS") as lowercase) /* Operating System */
+, set of  bes properties whose (name of it as lowercase = ("Last Report Time") as lowercase) /* Last Report Time */)

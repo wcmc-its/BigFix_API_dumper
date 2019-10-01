@@ -1,0 +1,1 @@
+curl --data-urlencode relevance@bf_relevance_query_monster -u svc_acct_name -k "https://bigfix.hostname.here:52311/api/query"
