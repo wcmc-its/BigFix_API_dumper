@@ -44,8 +44,16 @@ class RelevanceQueryDumper():
             'name of item 0 of it|"missing Name"' ]
             #'(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
 
+        # characters that probably shouldn't be in a field name
+        invalid_field_name = re.compile(r"[^a-zA-Z0-9_\s]")
         # add a field query for each field
         for field in fields:
+            # input validation
+            if type(field) is not str:
+                raise Exception("One of the requested fields is not a string")
+            if invalid_field_name.search(field):
+                raise Exception(f'Invalid character in field name "{field}"')
+            # append the formatted query string
             get_fields.append(f'set of  bes properties whose (name of it as lowercase = ("{field}") as lowercase)')
 
         # add a set expansion and error handling for each field
@@ -80,7 +88,7 @@ class RelevanceQueryDumper():
             verify = self.verify)
         return api_output.text
 
-    def parse_api_output(self, api_xml):
+    def parse_api_output(self, api_xml, fields):
         """ take in raw output from the API, return a dictionary """
         return parsed_output
 
