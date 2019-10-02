@@ -27,6 +27,7 @@ class RelevanceQueryDumper():
         self.relevance_api_session = requests.session(
             auth=(relevance_api_username,relevance_api_password),
             verify=False)
+        self.relevance_api_url = relevance_api_url
 
     def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
