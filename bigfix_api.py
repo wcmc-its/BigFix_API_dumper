@@ -26,18 +26,18 @@ class RelevanceQueryDumper():
     def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password):
         self.relevance_api_session = requests.session(auth=(relevance_api_username,relevance_api_password), verify=False)
 
-    def build_relevance_query(fields):
+    def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
         returns a relevance query to send to BigFix"""
         query = ""
         return query
 
-    def query_relevance_api(query):
+    def query_relevance_api(self, query):
         """ takes in a query, returns its output """
         api_output = ""
         return api_output
 
-    def dump(fields):
+    def dump(self, fields):
         """ takes in a list of fields to query, returns a dictionary of the output """
 
 
