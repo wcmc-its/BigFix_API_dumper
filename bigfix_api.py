@@ -32,7 +32,15 @@ class RelevanceQueryDumper():
     def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
         returns a relevance query to send to BigFix"""
-        query = ""
+        # how many times we'll need to iterate some of the query sections
+        num_fields = len(fields)
+
+        # query section for the field declarations
+        get_fields = []
+        # query section for the set expansion
+        set_expansion = []
+        # query section to expand and join fields
+        error_handling_and_concatenation = []
         return query
 
     def query_relevance_api(self, query):
@@ -49,7 +57,7 @@ class RelevanceQueryDumper():
         # build a query
         # query the api
         # parse the output
-        return output 
+        return output
 
 
 
