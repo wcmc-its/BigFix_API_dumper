@@ -45,10 +45,12 @@ class RelevanceQueryDumper():
             '(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
 
         # build query
-        joined_query_sections = [error_handling_and_field_concatenation.join(",\n"),
-                                set_expansion.join(",\n"),
-                                get_fields.join(",\n")]
-        query = "(\n" + joined_query_sections.join(") of (") + "\n)"
+        joined_query_sections = "\n) of (\n".join(
+                        [",\n".join(error_handling_and_field_concatenation),
+                                ",\n".join(set_expansion),
+                                ",\n".join(get_fields)
+                        ])
+        query = "(\n" + joined_query_sections + "\n)"
         if __debug__:
             print(query)
 
