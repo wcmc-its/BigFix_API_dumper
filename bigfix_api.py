@@ -53,14 +53,13 @@ class RelevanceQueryDumper():
         query = "(\n" + joined_query_sections + "\n)"
         if __debug__:
             print(query)
-
         return query
 
     def query_relevance_api(self, query):
         """ takes in a query, returns its raw output """
         api_output = self.relevance_api_session.post(
             self.relevance_api_url,
-            data = {relevance: query},
+            data = {"relevance": query},
             verify = self.verify)
         return api_output.text
 
@@ -71,9 +70,13 @@ class RelevanceQueryDumper():
     def dump(self, fields):
         """ takes in a list of fields to query, returns a dictionary of the output """
         # build a query
+        if type(fields) is not list:
+            raise Exception("fields needs to be a list")
+        query = self.build_relevance_query(fields)
         # query the api
+        api_output = self.query_relevance_api(query)
         # parse the output
-        return output
+        return api_output
 
 
 
