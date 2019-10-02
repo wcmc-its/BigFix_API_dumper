@@ -88,9 +88,27 @@ class RelevanceQueryDumper():
             verify = self.verify)
         return api_output.text
 
-    def parse_api_output(self, api_xml, fields):
+    def parse_api_output(self, raw_xml, fields):
         """ take in raw output from the API, return a dictionary """
-        return parsed_output
+        # force utf-8 encoding on raw xml for lxml
+        utf8_xml = raw_xml.encode('utf-8')
+        # have etree do its thing
+        xml = lxml.etree.fromstring(utf8_xml)
+
+        # dictionary to store our parsed output in:
+        output = {}
+
+        # iterate through the tree and accumulate in output
+        for tuple in xml[0][0]:
+            # first element is always the computer name
+            computer_name = tuple[0].text
+            # the rest of the elements are the fields that were requested
+            field_values = [answer.text for answer in tuple[1:]]
+            kv_pair_of_fields = dict(zip(fields,field_values))
+            # finally write it to our dictionary
+            output[computer_name] = kv_pair_of_fields
+
+        return output
 
     def dump(self, fields):
         """ takes in a list of fields to query, returns a dictionary of the output """
@@ -101,7 +119,8 @@ class RelevanceQueryDumper():
         # query the api
         api_output = self.query_relevance_api(query)
         # parse the output
-        return api_output
+        parsed_output = self.parse_api_output(api_output, fields)
+        return parsed_output
 
 
 
