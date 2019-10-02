@@ -36,11 +36,16 @@ class RelevanceQueryDumper():
         num_fields = len(fields)
 
         # query section for the field declarations
-        get_fields = []
+        get_fields = ["set of BES computers"]
         # query section for the set expansion
-        set_expansion = []
+        set_expansion = ["elements of item 0 of it"]
         # query section to expand and join fields
-        error_handling_and_concatenation = []
+        error_handling_and_field_concatenation =
+            ['name of item 0 of it|"missing Name"',
+            '(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
+
+        
+
         return query
 
     def query_relevance_api(self, query):
