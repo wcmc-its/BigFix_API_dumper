@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This script pulls from Bigfix API, and outputs All systems into csv format.
-# Written by: Brian Whelan
+# Written by: Brian Whelan and Bryan Fisher
 # v2.5
 import requests
 import getpass
@@ -17,13 +17,41 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 
+
+# relevance query stuff
+
+class RelevanceQueryDumper():
+    """ class to handle interfacing with the BigFix relevance api """
+
+    def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password):
+        self.relevance_api_session = requests.session(auth=(relevance_api_username,relevance_api_password), verify=False)
+
+    def build_relevance_query(fields):
+        """ takes in a list of fields to query from BigFix,
+        returns a relevance query to send to BigFix"""
+        query = ""
+        return query
+
+    def query_relevance_api(query):
+        """ takes in a query, returns its output """
+        api_output = ""
+        return api_output
+
+    def dump(fields):
+        """ takes in a list of fields to query, returns a dictionary of the output """
+
+
+
+
+
+# REST API stuff
+
 # Initializes cache files
 bigfix_new_asset_url_cache_file = '.bigfix_new_asset_url_list.cache'
 bigfix_old_asset_url_cache_file = '.bigfix_old_asset_url_list.cache'
 bigfix_diff_asset_url_cache_file = '.bigfix_temp_asset_url_list.cache'
 bigfix_inv_asset_url_cache_file = '.bigfix_inv_asset_url_list.cache'
 bigfix_asset_info_cache_file = '.bigfix_asset_info.cache'
-
 
 def init_cache():
     # Intiallize Cache files.  This should only be run once perday
