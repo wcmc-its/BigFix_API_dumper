@@ -36,12 +36,21 @@ class RelevanceQueryDumper():
         return query
 
     def query_relevance_api(self, query):
-        """ takes in a query, returns its output """
+        """ takes in a query, returns its raw output """
         api_output = ""
         return api_output
 
+    def parse_api_output(self, api_xml):
+        """ take in raw output from the API, return a dictionary """
+        return parsed_output
+
     def dump(self, fields):
         """ takes in a list of fields to query, returns a dictionary of the output """
+        # build a query
+        # query the api
+        # parse the output
+        return output 
+
 
 
 
