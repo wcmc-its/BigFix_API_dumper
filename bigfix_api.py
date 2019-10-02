@@ -33,7 +33,7 @@ class RelevanceQueryDumper():
         """ takes in a list of fields to query from BigFix,
         returns a relevance query to send to BigFix"""
         # how many times we'll need to iterate some of the query sections
-        num_fields = len(fields)
+        num_fields = len(fields) + 1
 
         # query section for the field declarations
         get_fields = ["set of BES computers"]
@@ -41,8 +41,25 @@ class RelevanceQueryDumper():
         set_expansion = ["elements of item 0 of it"]
         # query section to expand and join fields
         error_handling_and_field_concatenation = [
-            'name of item 0 of it|"missing Name"',
-            '(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
+            'name of item 0 of it|"missing Name"' ]
+            #'(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
+
+        # add a field query for each field
+        for field in fields:
+            get_fields.append(f'set of  bes properties whose (name of it as lowercase = ("{field}") as lowercase)')
+
+        # add a set expansion and error handling for each field
+        for item in range(1, num_fields):
+            set_expansion.append(f'item {item} of it')
+            error_handling_and_field_concatenation.append(
+                f'(if (size of item {item} of it = 1) '\
+                f'then ('\
+                    f'(if it = "" then "Property {item}: No values" else it) '\
+                    f'of concatenation ";" of values of results '\
+                    f'(item 0 of it, elements of item {item} of it)) '\
+                f'else '\
+                    f'(if (size of item {item} of it > 1) then (("Property {item} duplicates: " & concatenation "|" of ((name of it) & "=" & (id of it as string)) of elements of item {item} of it) as string) else ("Property {item} does not exist")))'
+            )
 
         # build query
         joined_query_sections = "\n) of (\n".join(
