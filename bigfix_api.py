@@ -24,7 +24,9 @@ class RelevanceQueryDumper():
     """ class to handle interfacing with the BigFix relevance api """
 
     def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password):
-        self.relevance_api_session = requests.session(auth=(relevance_api_username,relevance_api_password), verify=False)
+        self.relevance_api_session = requests.session(
+            auth=(relevance_api_username,relevance_api_password),
+            verify=False)
 
     def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
