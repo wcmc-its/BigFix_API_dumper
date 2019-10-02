@@ -24,10 +24,10 @@ class RelevanceQueryDumper():
     """ class to handle interfacing with the BigFix relevance api """
 
     def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password):
-        self.relevance_api_session = requests.session(
-            auth=(relevance_api_username,relevance_api_password),
-            verify=False)
+        self.relevance_api_session = requests.session()
+        self.relevance_api_session.auth = (relevance_api_username,relevance_api_password)
         self.relevance_api_url = relevance_api_url
+        self.verify = False
 
     def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
@@ -40,11 +40,17 @@ class RelevanceQueryDumper():
         # query section for the set expansion
         set_expansion = ["elements of item 0 of it"]
         # query section to expand and join fields
-        error_handling_and_field_concatenation =
-            ['name of item 0 of it|"missing Name"',
+        error_handling_and_field_concatenation = [
+            'name of item 0 of it|"missing Name"',
             '(concatenation ";" of values of results (item 0 of it, elements of item 1 of it))']
 
-        
+        # build query
+        joined_query_sections = [error_handling_and_field_concatenation.join(",\n"),
+                                set_expansion.join(",\n"),
+                                get_fields.join(",\n")]
+        query = "(\n" + joined_query_sections.join(") of (") + "\n)"
+        if __debug__:
+            print(query)
 
         return query
 
