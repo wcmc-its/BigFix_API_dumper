@@ -58,8 +58,11 @@ class RelevanceQueryDumper():
 
     def query_relevance_api(self, query):
         """ takes in a query, returns its raw output """
-        api_output = ""
-        return api_output
+        api_output = self.relevance_api_session.post(
+            self.relevance_api_url,
+            data = {relevance: query},
+            verify = self.verify)
+        return api_output.text
 
     def parse_api_output(self, api_xml):
         """ take in raw output from the API, return a dictionary """
