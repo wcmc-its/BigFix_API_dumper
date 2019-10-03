@@ -143,7 +143,7 @@ def init_cache():
     try:
         f = open(bigfix_new_asset_url_cache_file)
         f.close()
-    except IOError as e:
+    except:
         f = open(bigfix_new_asset_url_cache_file, 'w')
         f.close()
 
@@ -168,7 +168,7 @@ def update_history(update_hist):
     try:
         f = open(bigfix_inv_asset_url_cache_file)
         f.close()
-    except IOError as e:
+    except:
         f = open(bigfix_inv_asset_url_cache_file, 'w')
         f.close()
     if update_hist == 'true':
@@ -198,8 +198,8 @@ def comp_assets(search_for, comp_against, delta_output):
         f = open(delta_output)
         f.close()
         os.remove(delta_output)
-    except IOError as e:
-        null = ''
+    except:
+        pass
     #     break
     newf = open(search_for, 'r')
     for line_in_newf in newf:
@@ -368,7 +368,7 @@ if __name__ == "__main__":
 
     # parser mode for the relevance API
     relevance_dumper = parser.add_subparsers()
-    
+
     parser.add_argument('-c', '--config', help="config file.")
     parser.add_argument('-u', '--user', help="API username")
     parser.add_argument('-p', '--password', help="API password. If not specified here or in \
