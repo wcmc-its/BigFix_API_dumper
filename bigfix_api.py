@@ -23,11 +23,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class RelevanceQueryDumper():
     """ class to handle interfacing with the BigFix relevance api """
 
-    def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password):
+    def __init__(self, relevance_api_url, relevance_api_username, relevance_api_password, verify=True):
         self.relevance_api_session = requests.session()
         self.relevance_api_session.auth = (relevance_api_username,relevance_api_password)
         self.relevance_api_url = relevance_api_url
-        self.verify = False
+        self.verify = verify
 
     def build_relevance_query(self, fields):
         """ takes in a list of fields to query from BigFix,
