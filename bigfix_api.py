@@ -354,6 +354,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description = "Get a bunch of stuff from BigFix",
         epilog = """
+        There are two modes - rest and relevance.
+        rest mode is currently slower than relevance mode.
+
         By default, this script will attempt to input default
         values from a config file named "bigfix_config.conf."
         If this file is missing and none is specified via the
@@ -363,18 +366,18 @@ if __name__ == "__main__":
         be used.
         """
     )
-    # parser mode for the rest API
-    rest_dumper = parser.add_subparsers()
+    # parser modes for normal REST and relevance API query methods
+    subparsers = parser.add_subparsers()
+    rest_dumper = subparsers.add_parser("rest")
+    relevance_dumper = subparsers.add_parser("relevance")
 
-    # parser mode for the relevance API
-    relevance_dumper = parser.add_subparsers()
-
-    parser.add_argument('-c', '--config', help="config file.")
-    parser.add_argument('-u', '--user', help="API username")
-    parser.add_argument('-p', '--password', help="API password. If not specified here or in \
+    # config options for the rest dumper
+    rest_dumper.add_argument('-c', '--config', help="config file.")
+    rest_dumper.add_argument('-u', '--user', help="API username")
+    rest_dumper.add_argument('-p', '--password', help="API password. If not specified here or in \
                         the config file, it will be requested on the CLI")
-    parser.add_argument('-s', help="Force asking for password securely on CLI", action="store_true")
-    parser.add_argument('-r', '--rep_type',
+    rest_dumper.add_argument('-s', help="Force asking for password securely on CLI", action="store_true")
+    rest_dumper.add_argument('-r', '--rep_type',
                         help="Report Type",
                         default='new',
                         choices=['new', 'last', 'current', 'new_servers', 'new_server_hist_upd',
