@@ -367,7 +367,7 @@ if __name__ == "__main__":
         """
     )
     # parser modes for normal REST and relevance API query methods
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(dest='subparser_name')
     rest_dumper = subparsers.add_parser("rest")
     relevance_dumper = subparsers.add_parser("relevance")
 
@@ -382,7 +382,25 @@ if __name__ == "__main__":
                         default='new',
                         choices=['new', 'last', 'current', 'new_servers', 'new_server_hist_upd',
                         'decom_servers', 'decom_server_hist_upd', 'history'])
+    
+    # config options for the relevance API dumper
+    relevance_dumper.add_argument('-c', '--config', help="config file.")
+    relevance_dumper.add_argument('-u', '--user', help="API username")
+    relevance_dumper.add_argument('-p', '--password', help="API password. If not specified here or in \
+                        the config file, it will be requested on the CLI")
+    relevance_dumper.add_argument('-s', help="Force asking for password securely on CLI", action="store_true")
+    relevance_dumper.add_argument('-f', '--fields',
+                        help="A list of fields to get from BigFix",
+                        nargs='+',
+                        required=True,
+                        default='OS "ip address"',
+                        )
+    
     args = parser.parse_args()
+
+    if not args.subparser_name:
+        parser.error("Please specify a subcommand")
+        sys.exit()
 
     # try to read in values from an assumed config file
     try:
@@ -436,4 +454,13 @@ if __name__ == "__main__":
         password = getpass.getpass()
 
     # finally do the things
-    gen_asset_report(args.rep_type)
+    if args.subparser_name == "rest":
+        bigfix_url = bigfix_url + "/api/computers"
+        gen_asset_report(args.rep_type)
+    elif args.subparser_name == "relevance":
+        relevance_api_url = bigfix_url + "/api/query"
+        bigfix_dumper = RelevanceQueryDumper(relevance_api_url, username, password, verify=False)
+        query_output = bigfix_dumper.dump(args.fields)
+        print(query_output)
+
+
