@@ -363,6 +363,12 @@ if __name__ == "__main__":
         be used.
         """
     )
+    # parser mode for the rest API
+    rest_dumper = parser.add_subparsers()
+
+    # parser mode for the relevance API
+    relevance_dumper = parser.add_subparsers()
+    
     parser.add_argument('-c', '--config', help="config file.")
     parser.add_argument('-u', '--user', help="API username")
     parser.add_argument('-p', '--password', help="API password. If not specified here or in \
