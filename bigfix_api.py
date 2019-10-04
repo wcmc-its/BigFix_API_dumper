@@ -4,7 +4,6 @@
 # Written by: Brian Whelan and Bryan Fisher
 # v2.5
 import requests
-import getpass
 import re
 from bs4 import BeautifulSoup
 import lxml
@@ -335,6 +334,7 @@ def gen_asset_report(rep_type):
 if __name__ == "__main__":
     import argparse
     import configparser
+    import getpass
     # init_cache()
     #get_asset_url(username, password)
     #update_hist = 'true'
