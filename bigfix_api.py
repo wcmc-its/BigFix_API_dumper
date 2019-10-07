@@ -102,9 +102,10 @@ class RelevanceQueryDumper():
             # first element is always the computer name
             computer_name = tuple[0].text
             # the rest of the elements are the fields that were requested
-            field_values = [answer.text for answer in tuple[1:]]
+            # multivalue fields are delimited by a semicolon, so we split(";")
+            field_values = [answer.text.split(";") for answer in tuple[1:]]
             kv_pair_of_fields = dict(zip(fields,field_values))
-            # finally write it to our dictionary
+            # finally write it to our dictionary, using computer_name as the key
             output[computer_name] = kv_pair_of_fields
 
         return output
